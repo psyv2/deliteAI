@@ -390,6 +390,12 @@ bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinu
   return ::schedule_logs_upload(repeatIntervalInMinutes, retryIntervalInMinutesIfFailed,
                                 workManagerConfigJsonChar);
 }
+const char* get_phonemes(const char* ptr) {
+    return get_phonemes(ptr);
+}
+int initialize_espeak(const char* path){
+    return initialize_espeak(path);
+}
 
 void create_symlink(const fs::path& target, const std::string& link) {
   std::string targetStr = target.string();

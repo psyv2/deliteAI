@@ -146,6 +146,8 @@ class DataVariable : public std::enable_shared_from_this<DataVariable> {
 
   virtual char** get_string_ptr() { THROW_UNSUPPORTED("get_string_ptr"); }
 
+  virtual OpReturnType convertTextToPhonemes(const std::vector<OpReturnType>& arguments) { THROW_UNSUPPORTED("convertTextToPhonemes")}
+  virtual OpReturnType initializeEspeak() { THROW_UNSUPPORTED("initializeEspeak")}
   virtual OpReturnType execute_function(const std::vector<OpReturnType>& arguments,
                                         CallStack& stack) {
     THROW_UNSUPPORTED("execute_function");

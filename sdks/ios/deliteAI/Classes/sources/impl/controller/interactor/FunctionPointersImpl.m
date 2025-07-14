@@ -108,6 +108,8 @@ void initClientFunctionPointers(void){
     in_ios_object_global = in_ios_object;
     release_ios_object_global = release_ios_object;
     get_keys_ios_object_global = get_keys_ios_object;
+    get_phonemes_global = get_phonemes_interop;
+    initialize_espeak_global = initialize_espeak_interop;
 }
 
 CNetworkResponse send_request_interop(const char *body, const char *headers, const char *url,
@@ -144,6 +146,22 @@ void log_error_interop(const char *message) {
 void log_fatal_interop(const char *message) {
     Logger *logger = [Logger shared];
     [logger fatalWithMessage:[NSString stringWithUTF8String:message]];
+}
+
+char *get_phonemes_interop(const void *pText) {
+    NSString *textString = [NSString stringWithUTF8String:(const char *)pText];
+   if (EspeakNGCallbacks.espeakTextToPhonemesCallback) {
+       NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemesCallback(textString);
+       return strdup([phonemeString UTF8String]);
+   }
+    return NULL;
+}
+
+int initialize_espeak_interop(const void * path){
+   if (EspeakNGCallbacks.initializeEspeakCallback) {
+       return EspeakNGCallbacks.initializeEspeakCallback();
+   }
+    return -1;
 }
 
 bool set_thread_priority_min_interop() {

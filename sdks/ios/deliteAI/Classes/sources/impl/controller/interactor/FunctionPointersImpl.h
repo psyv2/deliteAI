@@ -21,6 +21,8 @@ void log_fatal_interop(const char *message);
 struct FileDownloadInfo download_model_interop(const char *url, const char *headers, const char *fileName, const char *tagDir);
 bool set_thread_priority_min_interop();
 bool set_thread_priority_max_interop();
+char *get_phonemes_interop();
+int initialize_espeak_interop();
 
 NimbleNetStatus* get_ios_object_string_subscript(IosObject proto, const char* key, CTensor* child);
 NimbleNetStatus* get_ios_object_int_subscript(IosObject proto, int key, CTensor* child);

@@ -24,6 +24,8 @@ get_hardware_info_type get_hardware_info_global = nullptr;
 download_model_type download_model_global = nullptr;
 set_thread_priority_min_type set_thread_priority_min_global = nullptr;
 set_thread_priority_max_type set_thread_priority_max_global = nullptr;
+get_phonemes_type get_phonemes_global = nullptr;
+initialize_espeak_type initialize_espeak_global = nullptr;
 
 bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinutesIfFailed,
                           const char *workManagerConfigJsonChar) {
@@ -111,4 +113,18 @@ FileDownloadInfo download_to_file_async(const char *url, const char *headers, co
   }
   FileDownloadInfo f;
   return f;
+}
+
+char *get_phonemes(const char *text) {
+  if (get_phonemes_global != nullptr) {
+    return get_phonemes_global(text);
+  }
+  return nullptr;
+}
+
+int initialize_espeak(const char *path) {
+  if (initialize_espeak_global != nullptr) {
+    return initialize_espeak_global(path);
+  }
+  return -1;
 }

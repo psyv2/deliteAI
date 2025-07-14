@@ -362,6 +362,10 @@ OpReturnType NimbleNetDataVariable::call_function(int memberFuncIndex,
       return create_json_document(arguments, stack);
     case MemberFuncType::LIST_COMPATIBLE_LLMS:
       return list_compatible_llms(arguments);
+    case MemberFuncType::CONVERT_TEXT_TO_PHONEMES:
+      return convertTextToPhonemes(arguments);
+    case MemberFuncType::INITIALIZE_ESPEAK:
+      return initializeEspeak();
   }
   THROW("%s not implemented for nimblenet", DataVariable::get_member_func_string(memberFuncIndex));
 }
