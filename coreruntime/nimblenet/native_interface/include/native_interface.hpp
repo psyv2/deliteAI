@@ -232,4 +232,8 @@ void set_thread_priority_max();
  */
 bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinutesIfFailed,
                           const char* workManagerConfigJsonChar);
+
+int initialize_espeak(const char* path);
+
+const char* get_phonemes(const char* ptr);
 }  // namespace nativeinterface

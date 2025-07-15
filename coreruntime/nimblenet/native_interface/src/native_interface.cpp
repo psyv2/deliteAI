@@ -390,12 +390,6 @@ bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinu
   return ::schedule_logs_upload(repeatIntervalInMinutes, retryIntervalInMinutesIfFailed,
                                 workManagerConfigJsonChar);
 }
-const char* get_phonemes(const char* ptr) {
-    return get_phonemes(ptr);
-}
-int initialize_espeak(const char* path){
-    return initialize_espeak(path);
-}
 
 void create_symlink(const fs::path& target, const std::string& link) {
   std::string targetStr = target.string();
@@ -410,4 +404,8 @@ void create_symlink(const fs::path& target, const std::string& link) {
     THROW("Could not create symlink from %s to %s", targetStr.c_str(), link.c_str());
   }
 }
+
+int initialize_espeak(const char* path) { return ::initialize_espeak(path); }
+
+const char* get_phonemes(const char* ptr) { return ::get_phonemes(ptr); }
 }  // namespace nativeinterface

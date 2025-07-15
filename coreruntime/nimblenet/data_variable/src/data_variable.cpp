@@ -103,8 +103,8 @@ std::map<std::string, int> DataVariable::_memberFuncMap = {
     {"clear_context", MemberFuncType::CLEAR_CONTEXT},
     {"add_context", MemberFuncType::ADD_CONTEXT},
     {"list_compatible_llms", MemberFuncType::LIST_COMPATIBLE_LLMS},
-    {"convertTextToPhonemes", MemberFuncType::CONVERT_TEXT_TO_PHONEMES},
-    {"initializeEspeak",MemberFuncType::INITIALIZE_ESPEAK},
+    {"initialize_espeak", MemberFuncType::INITIALIZE_ESPEAK},
+    {"convert_text_to_phonemes", MemberFuncType::CONVERT_TEXT_TO_PHONEMES},
 };
 
 std::map<int, std::string> DataVariable::_inverseMemberFuncMap = {
@@ -190,11 +190,11 @@ std::map<int, std::string> DataVariable::_inverseMemberFuncMap = {
     {MemberFuncType::CREATE_CONCURRENT_EXECUTOR, "ConcurrentExecutor"},
     {MemberFuncType::SET_THREADS, "set_threadpool_threads"},
     {MemberFuncType::CANCEL, "cancel"},
-    {MemberFuncType::CONVERT_TEXT_TO_PHONEMES, "convertTextToPhonemes"},
-    {MemberFuncType::INITIALIZE_ESPEAK, "initializeEspeak"},
     {MemberFuncType::CLEAR_CONTEXT, "clear_context"},
     {MemberFuncType::ADD_CONTEXT, "add_context"},
     {MemberFuncType::LIST_COMPATIBLE_LLMS, "list_compatible_llms"},
+    {MemberFuncType::INITIALIZE_ESPEAK, "initialize_espeak"},
+    {MemberFuncType::CONVERT_TEXT_TO_PHONEMES, "convert_text_to_phonemes"},
 };
 
 int DataVariable::add_and_get_member_func_index(const std::string& memberFuncString) {
@@ -446,8 +446,11 @@ OpReturnType DataVariable::call_function(int memberFuncIndex,
       THROW_ARGUMENTS_NOT_MATCH(arguments.size(), 0, memberFuncIndex);
       return OpReturnType(new SingleVariable<bool>(is_string()));
     }
+    case MemberFuncType::INITIALIZE_ESPEAK: {
+      return initialize_espeak();
+    }
     case MemberFuncType::CONVERT_TEXT_TO_PHONEMES: {
-      return convertTextToPhonemes(arguments);
+      return convert_text_to_phonemesmes(arguments);
     }
   }
   THROW("%s not supported for variable %s(%s)", get_member_func_string(memberFuncIndex),
