@@ -404,4 +404,8 @@ void create_symlink(const fs::path& target, const std::string& link) {
     THROW("Could not create symlink from %s to %s", targetStr.c_str(), link.c_str());
   }
 }
+
+int initialize_espeak() { return ::initialize_espeak(); }
+
+const char* get_phonemes(const char* ptr) { return ::get_phonemes(ptr); }
 }  // namespace nativeinterface
