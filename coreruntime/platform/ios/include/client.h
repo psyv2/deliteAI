@@ -97,7 +97,7 @@ typedef bool (*set_thread_priority_max_type)();
  *
  * @return status code. -1 for failure, 22050 otherwise
  */
-typedef int (*initialize_espeak_type)(const char* path);
+typedef int (*initialize_espeak_type)();
 
 /**
  * @brief Function pointer type for getting phonemes.
@@ -221,7 +221,7 @@ struct FileDownloadInfo download_to_file_async(const char *url, const char *head
  *
  * @return Status code. -1 for failure, 22050 otherwise.
  */
-int initialize_espeak(const char* path);
+int initialize_espeak();
 
 /**
  * @brief Return phonemes of the given string.

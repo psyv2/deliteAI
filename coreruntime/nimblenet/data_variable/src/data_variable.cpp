@@ -450,7 +450,7 @@ OpReturnType DataVariable::call_function(int memberFuncIndex,
       return initialize_espeak();
     }
     case MemberFuncType::CONVERT_TEXT_TO_PHONEMES: {
-      return convert_text_to_phonemesmes(arguments);
+      return convert_text_to_phonemes(arguments);
     }
   }
   THROW("%s not supported for variable %s(%s)", get_member_func_string(memberFuncIndex),

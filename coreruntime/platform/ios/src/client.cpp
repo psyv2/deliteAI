@@ -115,9 +115,9 @@ FileDownloadInfo download_to_file_async(const char *url, const char *headers, co
   return f;
 }
 
-int initialize_espeak(const char* path) {
+int initialize_espeak() {
   if (initialize_espeak_global != nullptr) {
-    return initialize_espeak_global(path);
+    return initialize_espeak_global();
   }
   return -1;
 }

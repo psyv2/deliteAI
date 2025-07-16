@@ -73,6 +73,7 @@ char32_t get_next_utf8_char(const char*& p) {
   return 0xFFFD;  // Unicode replacement character
 }
 
+#if 0
 // Function to write a UTF-8 character to a buffer
 void append_utf8_char(char32_t ch, char*& buffer) {
   if (ch < 0x80) {
@@ -95,6 +96,7 @@ void append_utf8_char(char32_t ch, char*& buffer) {
     *buffer++ = static_cast<char>(0x80 | (ch & 0x3F));
   }
 }
+#endif
 
 // Function to check if a Unicode character is a stress marker
 bool is_stress_marker(char32_t ch) {
@@ -516,7 +518,7 @@ OpReturnType NimbleNetDataVariable::initialize_espeak() {
 #if defined(__ANDROID__)
 
 #elif defined(IOS)
-  sampleRate = initialize_espeak(path);
+  sampleRate = nativeinterface::initialize_espeak();
 #else
 #endif
   return std::make_shared<SingleVariable<std::int64_t>>(sampleRate);
