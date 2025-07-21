@@ -235,5 +235,5 @@ bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinu
 
 int initialize_espeak();
 
-const char* get_phonemes(const char* ptr);
+const char* get_phonemes(const char* text);
 }  // namespace nativeinterface

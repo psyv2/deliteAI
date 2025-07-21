@@ -407,5 +407,5 @@ void create_symlink(const fs::path& target, const std::string& link) {
 
 int initialize_espeak() { return ::initialize_espeak(); }
 
-const char* get_phonemes(const char* ptr) { return ::get_phonemes(ptr); }
+const char* get_phonemes(const char* text) { return ::get_phonemes(text); }
 }  // namespace nativeinterface

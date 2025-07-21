@@ -108,8 +108,8 @@ void initClientFunctionPointers(void){
     in_ios_object_global = in_ios_object;
     release_ios_object_global = release_ios_object;
     get_keys_ios_object_global = get_keys_ios_object;
-    get_phonemes_global = get_phonemes_interop;
     initialize_espeak_global = initialize_espeak_interop;
+    get_phonemes_global = get_phonemes_interop;
 }
 
 CNetworkResponse send_request_interop(const char *body, const char *headers, const char *url,
@@ -156,8 +156,8 @@ int initialize_espeak_interop() {
 }
 
 char *get_phonemes_interop(const char *text) {
-    NSString *textString = [NSString stringWithUTF8String:text];
     if (EspeakNGCallbacks.espeakTextToPhonemesCallback) {
+        NSString *textString = [NSString stringWithUTF8String:text];
         NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemesCallback(textString);
         return strdup([phonemeString UTF8String]);
     }
@@ -425,7 +425,7 @@ NimbleNetStatus* get_keys_ios_object(IosObject obj, CTensor* result){
             arrayLength = [wrapper count];
 
         }
-        case IOS_MAP: { 
+        case IOS_MAP: {
             ProtoMapWrapper* wrapper = (__bridge ProtoMapWrapper*) obj.obj;
             status = [wrapper get_keysWithValue:&value];
             arrayLength = [wrapper count];
