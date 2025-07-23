@@ -93,8 +93,6 @@ typedef bool (*set_thread_priority_max_type)();
 /**
  * @brief Function pointer type to initialize espeak.
  *
- * @param path path to home directory where espeak dictionaries are present.
- *
  * @return status code. -1 for failure, 22050 otherwise
  */
 typedef int (*initialize_espeak_type)();

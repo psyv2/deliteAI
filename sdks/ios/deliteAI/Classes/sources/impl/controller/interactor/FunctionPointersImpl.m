@@ -149,16 +149,16 @@ void log_fatal_interop(const char *message) {
 }
 
 int initialize_espeak_interop() {
-    if (EspeakNGCallbacks.initializeEspeakCallback) {
-        return EspeakNGCallbacks.initializeEspeakCallback();
+    if (EspeakNGCallbacks.initializeEspeak) {
+        return EspeakNGCallbacks.initializeEspeak();
     }
     return -1;
 }
 
 char *get_phonemes_interop(const char *text) {
-    if (EspeakNGCallbacks.espeakTextToPhonemesCallback) {
+    if (EspeakNGCallbacks.espeakTextToPhonemes) {
         NSString *textString = [NSString stringWithUTF8String:text];
-        NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemesCallback(textString);
+        NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemes(textString);
         return strdup([phonemeString UTF8String]);
     }
     return NULL;

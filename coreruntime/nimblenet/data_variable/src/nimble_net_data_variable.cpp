@@ -512,11 +512,9 @@ OpReturnType NimbleNetDataVariable::set_threads(const std::vector<OpReturnType>&
 }
 
 OpReturnType NimbleNetDataVariable::initialize_espeak() {
-  std::string homeDirectory = nativeinterface::HOMEDIR;
-  auto path = homeDirectory.c_str();
   int sampleRate;
 #if defined(__ANDROID__)
-
+  THROW_UNSUPPORTED("initialize_espeak");
 #elif defined(IOS)
   sampleRate = nativeinterface::initialize_espeak();
 #else
@@ -534,6 +532,7 @@ OpReturnType NimbleNetDataVariable::convert_text_to_phonemes(
   std::string phonemesStr;
 
 #if defined(__ANDROID__)
+  THROW_UNSUPPORTED("initialize_espeak");
 
 #elif defined(IOS)
   phonemes = get_phonemes(pText);
