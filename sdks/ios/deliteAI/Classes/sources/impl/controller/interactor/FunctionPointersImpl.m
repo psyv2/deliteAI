@@ -76,9 +76,9 @@ void decompressGzippedFile(const char* gzippedFilePath) {
     gzclose(gzFile);
     fclose(decompressedFile);
     NSLog(@"File decompressed and saved to %s", decompressedFilePath);
-    
+
     remove(gzippedFilePath);
-    
+
     rename(decompressedFilePath, gzippedFilePath);
 
 }
@@ -95,7 +95,7 @@ void initClientFunctionPointers(void){
     download_model_global = download_model_interop;
     set_thread_priority_max_global = set_thread_priority_max_interop;
     set_thread_priority_min_global = set_thread_priority_min_interop;
-    
+
     get_ios_object_string_subscript_global = get_ios_object_string_subscript;
     get_ios_object_int_subscript_global = get_ios_object_int_subscript;
     deallocate_ios_nimblenet_status_global = deallocate_ios_nimblenet_status;
@@ -108,6 +108,8 @@ void initClientFunctionPointers(void){
     in_ios_object_global = in_ios_object;
     release_ios_object_global = release_ios_object;
     get_keys_ios_object_global = get_keys_ios_object;
+    initialize_espeak_global = initialize_espeak_interop;
+    get_phonemes_global = get_phonemes_interop;
 }
 
 CNetworkResponse send_request_interop(const char *body, const char *headers, const char *url,
@@ -146,8 +148,23 @@ void log_fatal_interop(const char *message) {
     [logger fatalWithMessage:[NSString stringWithUTF8String:message]];
 }
 
+int initialize_espeak_interop() {
+    if (EspeakNGCallbacks.initializeEspeak) {
+        return EspeakNGCallbacks.initializeEspeak();
+    }
+    return -1;
+}
+
+char *get_phonemes_interop(const char *text) {
+    if (EspeakNGCallbacks.espeakTextToPhonemes) {
+        NSString *textString = [NSString stringWithUTF8String:text];
+        NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemes(textString);
+        return strdup([phonemeString UTF8String]);
+    }
+    return NULL;
+}
+
 bool set_thread_priority_min_interop() {
-    
    return [NSThread setThreadPriority:0.0];
 }
 
@@ -156,7 +173,7 @@ bool set_thread_priority_max_interop() {
 }
 
 struct FileDownloadInfo download_model_interop(const char *url, const char *headers, const char *fileName, const char *tagDir){
-    
+
     NSString *urlString = [NSString stringWithUTF8String:url];
     NSString *fileNameString = [NSString stringWithUTF8String:fileName];
     NSString *tagDirString = [NSString stringWithUTF8String:tagDir];
@@ -197,9 +214,9 @@ NimbleNetStatus* get_ios_object_string_subscript(IosObject proto, const char* ke
         case IOS_ARRAY:
             return createNimbleNetStatus(@"string_subscript not supported for array object");
     }
-    
+
     if (status) return status;
-    
+
     status = convertSingularInputToCTensor(value,child);
     /*
      * We need to release this value due to some issue (or feature) in ObjectiveC-Swift interop
@@ -211,7 +228,7 @@ NimbleNetStatus* get_ios_object_string_subscript(IosObject proto, const char* ke
     CFRelease((__bridge CFTypeRef)(value));
     return status;
 }
- 
+
 NimbleNetStatus* get_ios_object_int_subscript(IosObject proto, int index, CTensor* child) {
     id value = NULL;
     NimbleNetStatus* status = NULL;
@@ -226,7 +243,7 @@ NimbleNetStatus* get_ios_object_int_subscript(IosObject proto, int index, CTenso
         }
     }
     if (status) return status;
-  
+
     status = convertSingularInputToCTensor(value, child);
     CFRelease((__bridge CFTypeRef)(value));
     return status;
@@ -262,7 +279,6 @@ NimbleNetStatus* get_ios_object_size(IosObject proto, int* val)  {
     }
 }
 
-
 NimbleNetStatus* createNimbleNetStatus(NSString *message) {
     NimbleNetStatus *status = (NimbleNetStatus *)malloc(sizeof(NimbleNetStatus));
     if (!status) return NULL;
@@ -273,10 +289,9 @@ NimbleNetStatus* createNimbleNetStatus(NSString *message) {
     return status;
 }
 
-
 NimbleNetStatus* set_ios_object_string_subscript(IosObject proto, const char* key, CTensor* value) {
     NimbleNetStatus* status = NULL;
-    
+
     switch (proto.type) {
         case IOS_PROTO_OBJECT: {
             ProtoObjectWrapper* obj = (__bridge ProtoObjectWrapper*) proto.obj;
@@ -306,10 +321,9 @@ NimbleNetStatus* set_ios_object_string_subscript(IosObject proto, const char* ke
             break;
         }
     }
-    
+
     return status;
 }
- 
 
 NimbleNetStatus* set_ios_object_int_subscript(IosObject proto, int key, CTensor* value) {
     switch (proto.type) {
@@ -326,7 +340,7 @@ NimbleNetStatus* set_ios_object_int_subscript(IosObject proto, int key, CTensor*
 }
 
 NimbleNetStatus* ios_object_to_string(IosObject obj, char** str){
-    
+
     switch (obj.type) {
         case IOS_PROTO_OBJECT:{
             ProtoObjectWrapper* objectWrapper = (__bridge ProtoObjectWrapper*) obj.obj;
@@ -373,12 +387,12 @@ NimbleNetStatus* in_ios_object(IosObject obj, const char* key, bool* result){
         case IOS_PROTO_OBJECT: {
             ProtoObjectWrapper* wrapper = (__bridge ProtoObjectWrapper*) obj.obj;
             return [wrapper in_ios_objectWithKey:keyString result:result];
-            
+
         }
         case IOS_ANY_OBJECT: {
             ProtoAnyWrapper* wrapper = (__bridge ProtoAnyWrapper*) obj.obj;
             return [wrapper in_ios_objectWithKey:keyString result:result];
-            
+
         }
         case IOS_MAP: {
             ProtoMapWrapper* wrapper = (__bridge ProtoMapWrapper*) obj.obj;
@@ -387,7 +401,7 @@ NimbleNetStatus* in_ios_object(IosObject obj, const char* key, bool* result){
         case IOS_ARRAY:
             return createNimbleNetStatus(@"string_subscript not supported for array object");
     }
-    
+
     return NULL;
 }
 
@@ -395,7 +409,7 @@ NimbleNetStatus* get_keys_ios_object(IosObject obj, CTensor* result){
     id value = NULL;
     NSInteger arrayLength;
     NimbleNetStatus* status = NULL;
-    
+
     switch (obj.type) {
         case IOS_ARRAY:
             return createNimbleNetStatus(@"get_keys not supported");
@@ -420,14 +434,13 @@ NimbleNetStatus* get_keys_ios_object(IosObject obj, CTensor* result){
     if(status) return status;
     enum DATATYPE datatype;
     datatype = STRING;
-    
-    
+
     // array will always be 1D
     result->shapeLength = 1;
-    
+
     int64_t* int64ShapeArray = (int64_t *)malloc(sizeof(int64_t) * 1);
     int64ShapeArray[0] = arrayLength;
-    
+
     result->data = convertArraytoVoidPointer(value, arrayLength, datatype);
     CFRelease((__bridge CFTypeRef)(value));
     result->dataType = datatype;
@@ -436,8 +449,6 @@ NimbleNetStatus* get_keys_ios_object(IosObject obj, CTensor* result){
 
     return NULL;
 }
-
-
 
 NimbleNetStatus* release_ios_object(IosObject obj){
     CFBridgingRelease(obj.obj); // ignoring return
