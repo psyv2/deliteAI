@@ -532,7 +532,7 @@ OpReturnType NimbleNetDataVariable::convert_text_to_phonemes(
   std::string phonemesStr;
 
 #if defined(__ANDROID__)
-  THROW_UNSUPPORTED("initialize_espeak");
+  THROW_UNSUPPORTED("convert_text_to_phonemes");
 
 #elif defined(IOS)
   phonemes = get_phonemes(pText);
