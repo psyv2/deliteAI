@@ -234,8 +234,6 @@ bool schedule_logs_upload(long repeatIntervalInMinutes, long retryIntervalInMinu
                           const char* workManagerConfigJsonChar);
 
 #ifdef IOS
-int initialize_espeak();
-
 const char* get_phonemes(const char* text);
-#endif
+#endif  // IOS
 }  // namespace nativeinterface

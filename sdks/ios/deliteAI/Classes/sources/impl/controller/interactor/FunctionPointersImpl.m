@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#import <Foundation/Foundation.h>
 #import "FunctionPointersImpl.h"
+
+#import <Foundation/Foundation.h>
+#import <zlib.h>
+
 #import <DeliteAI/DeliteAI-Swift.h>
 #import "DeliteAI/NimbleNetController.h"
 #import "client.h"
-#import <zlib.h>
 #import "frontend_layer.h"
 #import "DeliteAI/InputConverter.h"
 #import "DeliteAI/OutputConverter.h"
@@ -80,7 +82,6 @@ void decompressGzippedFile(const char* gzippedFilePath) {
     remove(gzippedFilePath);
 
     rename(decompressedFilePath, gzippedFilePath);
-
 }
 
 void initClientFunctionPointers(void){
@@ -96,6 +97,8 @@ void initClientFunctionPointers(void){
     set_thread_priority_max_global = set_thread_priority_max_interop;
     set_thread_priority_min_global = set_thread_priority_min_interop;
 
+    get_phonemes_global = get_phonemes_interop;
+
     get_ios_object_string_subscript_global = get_ios_object_string_subscript;
     get_ios_object_int_subscript_global = get_ios_object_int_subscript;
     deallocate_ios_nimblenet_status_global = deallocate_ios_nimblenet_status;
@@ -108,8 +111,6 @@ void initClientFunctionPointers(void){
     in_ios_object_global = in_ios_object;
     release_ios_object_global = release_ios_object;
     get_keys_ios_object_global = get_keys_ios_object;
-    initialize_espeak_global = initialize_espeak_interop;
-    get_phonemes_global = get_phonemes_interop;
 }
 
 CNetworkResponse send_request_interop(const char *body, const char *headers, const char *url,
@@ -148,22 +149,6 @@ void log_fatal_interop(const char *message) {
     [logger fatalWithMessage:[NSString stringWithUTF8String:message]];
 }
 
-int initialize_espeak_interop() {
-    if (EspeakNGCallbacks.initializeEspeak) {
-        return EspeakNGCallbacks.initializeEspeak();
-    }
-    return -1;
-}
-
-char *get_phonemes_interop(const char *text) {
-    if (EspeakNGCallbacks.espeakTextToPhonemes) {
-        NSString *textString = [NSString stringWithUTF8String:text];
-        NSString *phonemeString = EspeakNGCallbacks.espeakTextToPhonemes(textString);
-        return strdup([phonemeString UTF8String]);
-    }
-    return NULL;
-}
-
 bool set_thread_priority_min_interop() {
    return [NSThread setThreadPriority:0.0];
 }
@@ -173,7 +158,6 @@ bool set_thread_priority_max_interop() {
 }
 
 struct FileDownloadInfo download_model_interop(const char *url, const char *headers, const char *fileName, const char *tagDir){
-
     NSString *urlString = [NSString stringWithUTF8String:url];
     NSString *fileNameString = [NSString stringWithUTF8String:fileName];
     NSString *tagDirString = [NSString stringWithUTF8String:tagDir];
@@ -186,6 +170,16 @@ struct FileDownloadInfo download_model_interop(const char *url, const char *head
                                                    headers:headersString
                                                 fileName:fileNameString];
     return res;
+}
+
+char *get_phonemes_interop(const char *text) {
+    if (EspeakNGCallbacks.textToPhonemes == nil) {
+        return NULL;
+    }
+
+    NSString *textString = [NSString stringWithUTF8String:text];
+    NSString *phonemeString = EspeakNGCallbacks.textToPhonemes(textString);
+    return strdup([phonemeString UTF8String]);
 }
 
 // functions for proto
@@ -204,7 +198,6 @@ NimbleNetStatus* get_ios_object_string_subscript(IosObject proto, const char* ke
             ProtoAnyWrapper* obj = (__bridge ProtoAnyWrapper*) proto.obj;
             status = [obj get_valueWithKey:keyString value:&value];
             break;
-
         }
         case IOS_MAP: {
             ProtoMapWrapper* obj = (__bridge ProtoMapWrapper*) proto.obj;
@@ -256,6 +249,7 @@ void deallocate_ios_nimblenet_status(NimbleNetStatus* status){
     }
     return;
 }
+
 void deallocate_frontend_ctensor(CTensor* ctensor){
     if (ctensor == NULL) return;
     freeCTensor(ctensor);
@@ -304,7 +298,6 @@ NimbleNetStatus* set_ios_object_string_subscript(IosObject proto, const char* ke
             break;
         }
         case IOS_MAP: {
-
             ProtoMapWrapper* obj = (__bridge ProtoMapWrapper*) proto.obj;
             id data = castDataFromCTensor(value);
             NSString *keyString = [NSString stringWithUTF8String:key];
@@ -340,7 +333,6 @@ NimbleNetStatus* set_ios_object_int_subscript(IosObject proto, int key, CTensor*
 }
 
 NimbleNetStatus* ios_object_to_string(IosObject obj, char** str){
-
     switch (obj.type) {
         case IOS_PROTO_OBJECT:{
             ProtoObjectWrapper* objectWrapper = (__bridge ProtoObjectWrapper*) obj.obj;
@@ -380,6 +372,7 @@ NimbleNetStatus* ios_object_arrange(IosObject obj, const int* indices,int numInd
     }
     return NULL;
 }
+
 NimbleNetStatus* in_ios_object(IosObject obj, const char* key, bool* result){
     NSString *keyString = [NSString stringWithUTF8String:key];
 
@@ -387,12 +380,10 @@ NimbleNetStatus* in_ios_object(IosObject obj, const char* key, bool* result){
         case IOS_PROTO_OBJECT: {
             ProtoObjectWrapper* wrapper = (__bridge ProtoObjectWrapper*) obj.obj;
             return [wrapper in_ios_objectWithKey:keyString result:result];
-
         }
         case IOS_ANY_OBJECT: {
             ProtoAnyWrapper* wrapper = (__bridge ProtoAnyWrapper*) obj.obj;
             return [wrapper in_ios_objectWithKey:keyString result:result];
-
         }
         case IOS_MAP: {
             ProtoMapWrapper* wrapper = (__bridge ProtoMapWrapper*) obj.obj;
@@ -417,13 +408,11 @@ NimbleNetStatus* get_keys_ios_object(IosObject obj, CTensor* result){
             ProtoAnyWrapper* wrapper = (__bridge ProtoAnyWrapper*) obj.obj;
             status = [wrapper get_keysWithValue:&value];
             arrayLength = [wrapper count];
-
         }
         case IOS_PROTO_OBJECT:{
             ProtoObjectWrapper* wrapper = (__bridge ProtoObjectWrapper*) obj.obj;
             status = [wrapper get_keysWithValue:&value];
             arrayLength = [wrapper count];
-
         }
         case IOS_MAP: {
             ProtoMapWrapper* wrapper = (__bridge ProtoMapWrapper*) obj.obj;

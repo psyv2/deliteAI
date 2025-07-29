@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#pragma once
+
 #include "executor_structs.h"
 #include "nimble_net_util.hpp"
 
 #include "frontend_layer.h"
-
-#pragma once
 
 /**
  * @brief Function pointer type for sending a network request from iOS.
@@ -91,13 +91,6 @@ typedef bool (*set_thread_priority_min_type)();
 typedef bool (*set_thread_priority_max_type)();
 
 /**
- * @brief Function pointer type to initialize espeak.
- *
- * @return status code. -1 for failure, 22050 otherwise
- */
-typedef int (*initialize_espeak_type)();
-
-/**
  * @brief Function pointer type for getting phonemes.
  *
  * @param text text to convert.
@@ -117,7 +110,6 @@ extern get_hardware_info_type get_hardware_info_global; /**< Global function poi
 extern download_model_type download_model_global; /**< Global function pointer for model download. */
 extern set_thread_priority_min_type set_thread_priority_min_global; /**< Global function pointer for min thread priority. */
 extern set_thread_priority_max_type set_thread_priority_max_global; /**< Global function pointer for max thread priority. */
-extern initialize_espeak_type initialize_espeak_global; /**< Global function pointer for initializing espeak. */
 extern get_phonemes_type get_phonemes_global; /**< Global function pointer for getting phonemes. */
 
 /**
@@ -213,13 +205,6 @@ CNetworkResponse emptyResponse();
  */
 struct FileDownloadInfo download_to_file_async(const char *url, const char *headers,
                                                const char *fileName, const char *nimbleSdkDir);
-
-/**
- * @brief Initialize espeak.
- *
- * @return Status code. -1 for failure, 22050 otherwise.
- */
-int initialize_espeak();
 
 /**
  * @brief Return phonemes of the given string.

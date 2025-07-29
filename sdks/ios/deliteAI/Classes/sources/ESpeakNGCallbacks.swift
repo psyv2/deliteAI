@@ -7,6 +7,5 @@
 import Foundation
 
 @objc public class EspeakNGCallbacks: NSObject {
-    @objc public static var initializeEspeak: (() -> Int)?
-    @objc public static var espeakTextToPhonemes: ((String) -> String)?
+    @objc public static var textToPhonemes: ((String) -> String)?
 }

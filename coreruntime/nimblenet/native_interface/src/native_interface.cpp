@@ -5,9 +5,10 @@
  */
 
 #include "native_interface.hpp"
+
 #ifdef GENAI
 #include "miniz.h"
-#endif
+#endif  // GENAI
 #include <sys/stat.h>
 
 #include <cerrno>
@@ -20,6 +21,7 @@
 #include "resource_manager_constants.hpp"
 #include "util.hpp"
 #include "zlib.h"
+
 using namespace std;
 
 static inline bool get_file_from_device(const std::string& fullFilePath, string& result,
@@ -406,8 +408,6 @@ void create_symlink(const fs::path& target, const std::string& link) {
 }
 
 #ifdef IOS
-int initialize_espeak() { return ::initialize_espeak(); }
-
 const char* get_phonemes(const char* text) { return ::get_phonemes(text); }
-#endif
+#endif  // IOS
 }  // namespace nativeinterface

@@ -103,8 +103,9 @@ std::map<std::string, int> DataVariable::_memberFuncMap = {
     {"clear_context", MemberFuncType::CLEAR_CONTEXT},
     {"add_context", MemberFuncType::ADD_CONTEXT},
     {"list_compatible_llms", MemberFuncType::LIST_COMPATIBLE_LLMS},
-    {"initialize_espeak", MemberFuncType::INITIALIZE_ESPEAK},
+#ifdef IOS
     {"convert_text_to_phonemes", MemberFuncType::CONVERT_TEXT_TO_PHONEMES},
+#endif  // IOS
 };
 
 std::map<int, std::string> DataVariable::_inverseMemberFuncMap = {
@@ -193,8 +194,9 @@ std::map<int, std::string> DataVariable::_inverseMemberFuncMap = {
     {MemberFuncType::CLEAR_CONTEXT, "clear_context"},
     {MemberFuncType::ADD_CONTEXT, "add_context"},
     {MemberFuncType::LIST_COMPATIBLE_LLMS, "list_compatible_llms"},
-    {MemberFuncType::INITIALIZE_ESPEAK, "initialize_espeak"},
+#ifdef IOS
     {MemberFuncType::CONVERT_TEXT_TO_PHONEMES, "convert_text_to_phonemes"},
+#endif  // IOS
 };
 
 int DataVariable::add_and_get_member_func_index(const std::string& memberFuncString) {
@@ -445,12 +447,6 @@ OpReturnType DataVariable::call_function(int memberFuncIndex,
     case MemberFuncType::ISSTRING: {
       THROW_ARGUMENTS_NOT_MATCH(arguments.size(), 0, memberFuncIndex);
       return OpReturnType(new SingleVariable<bool>(is_string()));
-    }
-    case MemberFuncType::INITIALIZE_ESPEAK: {
-      return initialize_espeak();
-    }
-    case MemberFuncType::CONVERT_TEXT_TO_PHONEMES: {
-      return convert_text_to_phonemes(arguments);
     }
   }
   THROW("%s not supported for variable %s(%s)", get_member_func_string(memberFuncIndex),

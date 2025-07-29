@@ -130,7 +130,8 @@ enum MemberFuncType {
   CLEAR_CONTEXT,
   ADD_CONTEXT,
   LIST_COMPATIBLE_LLMS,
-  INITIALIZE_ESPEAK,
+#ifdef IOS
   CONVERT_TEXT_TO_PHONEMES,
+#endif  // IOS
   LASTTYPE,  // should be last
 };

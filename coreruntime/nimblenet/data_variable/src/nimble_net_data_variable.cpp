@@ -26,6 +26,7 @@
 #endif  // GENAI
 
 #ifdef IOS
+// TODO (jpuneet): move this chunk to a separate file
 namespace {
 // UTF-8 helper function to determine if byte is a continuation byte
 bool is_utf8_continuation(unsigned char byte) { return (byte & 0xC0) == 0x80; }
@@ -97,7 +98,7 @@ void append_utf8_char(char32_t ch, char*& buffer) {
     *buffer++ = static_cast<char>(0x80 | (ch & 0x3F));
   }
 }
-#endif
+#endif  // 0
 
 // Function to check if a Unicode character is a stress marker
 bool is_stress_marker(char32_t ch) {
@@ -228,7 +229,7 @@ std::string process_phonemes(const char* phonemes) {
   return transform_phonemes(without_stress);
 }
 }  // anonymous namespace
-#endif
+#endif  // IOS
 
 OpReturnType NimbleNetDataVariable::create_tensor(const std::vector<OpReturnType>& arguments) {
   THROW_ARGUMENTS_NOT_MATCH(arguments.size(), 2, MemberFuncType::CREATETENSOR);
@@ -513,40 +514,21 @@ OpReturnType NimbleNetDataVariable::set_threads(const std::vector<OpReturnType>&
 #endif  // MINIMAL_BUILD
 }
 
-OpReturnType NimbleNetDataVariable::initialize_espeak() {
-  int sampleRate;
-#if defined(__ANDROID__)
-  THROW_UNSUPPORTED("initialize_espeak");
-#elif defined(IOS)
-  sampleRate = nativeinterface::initialize_espeak();
-#else
-#endif
-  return std::make_shared<SingleVariable<std::int64_t>>(sampleRate);
-}
-
+#ifdef IOS
 OpReturnType NimbleNetDataVariable::convert_text_to_phonemes(
     const std::vector<OpReturnType>& arguments) {
   THROW_ARGUMENTS_NOT_MATCH(arguments.size(), 1, MemberFuncType::CONVERT_TEXT_TO_PHONEMES);
+
   std::string text = arguments[0]->get_string();
-  // phonemes = espeak_TextToPhonemes(&pText, espeakCHARS_UTF8, 24322);
-  const char* pText = text.c_str();
-  const char* phonemes = nullptr;
-  std::string phonemesStr;
-
-#if defined(__ANDROID__)
-  THROW_UNSUPPORTED("convert_text_to_phonemes");
-
-#elif defined(IOS)
-  phonemes = get_phonemes(pText);
-  phonemesStr = process_phonemes(phonemes);
-  if (phonemes) {
-    free((void*)phonemes);
+  const char* textCStr = text.c_str();
+  const char* phonemesCStr = nativeinterface::get_phonemes(textCStr);
+  std::string phonemes = process_phonemes(phonemesCStr);
+  if (phonemesCStr) {
+    free((void*)phonemesCStr);
   }
-#else
-  THROW("espeak only supported in android and ios");
-#endif
-  return std::make_shared<SingleVariable<std::string>>(phonemesStr);
+  return std::make_shared<SingleVariable<std::string>>(phonemes);
 }
+#endif  // IOS
 
 OpReturnType NimbleNetDataVariable::call_function(int memberFuncIndex,
                                                   const std::vector<OpReturnType>& arguments,
@@ -602,10 +584,11 @@ OpReturnType NimbleNetDataVariable::call_function(int memberFuncIndex,
       return create_json_document(arguments, stack);
     case MemberFuncType::LIST_COMPATIBLE_LLMS:
       return list_compatible_llms(arguments);
-    case MemberFuncType::INITIALIZE_ESPEAK:
-      return initialize_espeak();
+#ifdef IOS
     case MemberFuncType::CONVERT_TEXT_TO_PHONEMES:
+      // TODO (jpuneet): Should this be a part of another DelitePy module?
       return convert_text_to_phonemes(arguments);
+#endif  // IOS
   }
   THROW("%s not implemented for nimblenet", DataVariable::get_member_func_string(memberFuncIndex));
 }

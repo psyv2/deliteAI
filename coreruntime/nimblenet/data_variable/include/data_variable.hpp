@@ -327,12 +327,6 @@ class DataVariable : public std::enable_shared_from_this<DataVariable> {
   virtual JsonIterator* get_json_iterator() { THROW_UNSUPPORTED("get_json_iterator"); }
 
   virtual ~DataVariable() = default;
-
-  virtual OpReturnType initialize_espeak() { THROW_UNSUPPORTED("initialize_espeak"); }
-
-  virtual OpReturnType convert_text_to_phonemes(const std::vector<OpReturnType>& arguments) {
-    THROW_UNSUPPORTED("convert_text_to_phonemes");
-  }
 };
 
 #include "data_variable_templates.ipp"
