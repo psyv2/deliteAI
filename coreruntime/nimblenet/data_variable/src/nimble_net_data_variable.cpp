@@ -25,6 +25,7 @@
 #include "retriever.hpp"
 #endif  // GENAI
 
+#ifdef IOS
 namespace {
 // UTF-8 helper function to determine if byte is a continuation byte
 bool is_utf8_continuation(unsigned char byte) { return (byte & 0xC0) == 0x80; }
@@ -227,6 +228,7 @@ std::string process_phonemes(const char* phonemes) {
   return transform_phonemes(without_stress);
 }
 }  // anonymous namespace
+#endif
 
 OpReturnType NimbleNetDataVariable::create_tensor(const std::vector<OpReturnType>& arguments) {
   THROW_ARGUMENTS_NOT_MATCH(arguments.size(), 2, MemberFuncType::CREATETENSOR);
